@@ -1,0 +1,22 @@
+#!/usr/bin/ruby
+$LOAD_PATH << 'lib'
+require 'net/http'
+require 'json'
+require 'fileutils'
+require 'open-uri'
+require 'yaml'
+
+require 'client_binary_installer'
+require 'eks_configuration_writer'
+require 'eks_creator'
+require 'prerequisite_checker'
+require 'vpc_configuration_writer'
+
+
+PLATFORM = `uname`.chomp.downcase
+
+PrerequisiteChecker.new.check!
+ClientBinaryInstaller.new(PLATFORM).call
+# VpcConfigurationWriter.call
+# EksConfigurationWriter.new.call
+# EksCreator.call
