@@ -1,0 +1,61 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Amazon EKS Access'
+
+Parameters:
+  ClusterName:
+    Type: String
+    Description: Name of the EKS cluster
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC Id for the cluster
+
+Resources:
+  ControlPlaneSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows accessing the EKS Kubernetes API externally
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        -
+          CidrIp: 203.13.23.0/27
+          Description: REA ETS IP Range
+          FromPort: 443
+          IpProtocol: TCP
+          ToPort: 443
+
+  ClusterRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Join [ "-", [!Ref ClusterName, "admin"]]
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        -
+          Effect: "Allow"
+          Principal:
+            Service:
+            - "ec2.amazonaws.com"
+          Action:
+          - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+      -
+        PolicyName: "root"
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          -
+            Effect: "Allow"
+            Action: "*"
+            Resource: "*"
+
+Outputs:
+  SecurityGroups:
+    Description: Grants access to the Kubernetes API
+    Value: !Join [ ",", [ !Ref ControlPlaneSecurityGroup ] ]
+
+  RoleArn:
+    Description: Assuming this role grants admin access to the cluster
+    Value: !GetAtt ClusterRole.Arn
+

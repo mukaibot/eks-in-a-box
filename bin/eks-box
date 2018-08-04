@@ -10,13 +10,14 @@ require 'client_binary_installer'
 require 'eks_configuration_writer'
 require 'eks_creator'
 require 'prerequisite_checker'
-require 'vpc_configuration_writer'
+require 'vpc_creator'
 
 
 PLATFORM = `uname`.chomp.downcase
 
 PrerequisiteChecker.new.check!
 ClientBinaryInstaller.new(PLATFORM).call
-# VpcConfigurationWriter.call
-# EksConfigurationWriter.new.call
+vpc_creator = VpcCreator.new
+vpc_creator.call
+eks_config = EksConfigurationWriter.new(vpc_creator.vpc_name).call
 # EksCreator.call
