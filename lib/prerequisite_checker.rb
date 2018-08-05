@@ -18,6 +18,7 @@ class PrerequisiteChecker
   def check!
     check_awscli!
     ensure_rea_vpc
+    self
   end
 
   private

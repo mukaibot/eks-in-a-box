@@ -17,21 +17,23 @@ class EksConfigurationWriter
     end
 
     logger.info "Wrote config to #{config_file_name}"
+    self
   end
-
-  private
 
   def config_file_name
     "#{cluster_name}.config.yml"
   end
 
+  private
+
   def config_hash(config)
     {
-      "vpc_id"       => config.vpc_id,
-      "role_arn"     => config.role_arn,
       "cluster_name" => config.cluster_name,
+      "access_group" => config.security_group_id,
+      "region"       => config.region,
+      "role_arn"     => config.role_arn,
       "subnets"      => config.subnet_ids,
-      "access_group" => config.security_group_id
+      "vpc_id"       => config.vpc_id,
     }
   end
 end

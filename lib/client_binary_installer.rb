@@ -18,6 +18,7 @@ class ClientBinaryInstaller
 
     logger.info "I added some binaries to your machine." if @installed_binary
     logger.info "Please ensure #{@bin_path} is added to your $PATH" unless @bins_in_path
+    self
   end
 
   private

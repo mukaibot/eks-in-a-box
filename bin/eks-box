@@ -21,4 +21,4 @@ vpc_creator = VpcCreator.new
 vpc_creator.call
 config = vpc_creator.eks_config
 eks_config = EksConfigurationWriter.new(config).call
-# EksCreator.call
+EksCreator.new(eks_config.config_file_name).call

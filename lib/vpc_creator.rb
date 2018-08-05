@@ -102,6 +102,7 @@ class VpcCreator
     end
     @eks_config.cluster_name = @cluster_name
     @eks_config.vpc_id = vpc_id
+    @eks_config.region = @region
 
     logger.info "#{@cluster_name} IAM role is #{@eks_config.role_arn}"
     logger.info "VPC #{vpc_id} ready"

@@ -35,20 +35,15 @@ Resources:
           Effect: "Allow"
           Principal:
             Service:
-            - "ec2.amazonaws.com"
+            - "eks.amazonaws.com"
           Action:
           - "sts:AssumeRole"
       Path: "/"
-      Policies:
-      -
-        PolicyName: "root"
-        PolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-          -
-            Effect: "Allow"
-            Action: "*"
-            Resource: "*"
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+      - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+      - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+      - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
 
 Outputs:
   SecurityGroup:
