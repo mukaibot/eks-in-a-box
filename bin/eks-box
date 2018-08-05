@@ -9,9 +9,9 @@ require 'yaml'
 require 'client_binary_installer'
 require 'eks_configuration_writer'
 require 'eks_creator'
+require 'kube_config_merger'
 require 'prerequisite_checker'
 require 'vpc_creator'
-
 
 PLATFORM = `uname`.chomp.downcase
 
@@ -22,3 +22,4 @@ vpc_creator.call
 config = vpc_creator.eks_config
 eks_config = EksConfigurationWriter.new(config).call
 EksCreator.new(eks_config.config_file_name).call
+KubeConfigMerger.new(config).make_configs_happy
