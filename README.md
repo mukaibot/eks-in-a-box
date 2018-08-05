@@ -18,7 +18,7 @@ The Ruby script uses only in-built functionality and does not require any Gem de
 ## Usage
 Create a new EKS cluster
 
-`bin/eks-box` # will prompt you for cluster name
+`bin/eks-box # will prompt you for cluster name`
 
 The stacks will be named according to your cluster name, eg if you enter `my-cluster` as the name, the script will create:
 
