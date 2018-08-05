@@ -13,6 +13,12 @@ class EksCreator
   def call
     initiate_creation
     wait_for_cluster
+    if cluster_status == "ACTIVE"
+      logger.info "Success! Run '#{wait_command}' to get details"
+    else
+      logger.error "Aww shit. Something bad happened and your cluster did not become active. Run '#{wait_command}' to debug."
+    end
+
     self
   end
 
@@ -83,13 +89,17 @@ class EksCreator
 
   def wait_for_cluster
     while poll do
-      logger.debug "Waiting a few seconds for cluster"
-      sleep 3
+      logger.debug "Waiting for cluster"
+      sleep 15
     end
   end
 
   def poll
+    cluster_status == "CREATING"
+  end
+
+  def cluster_status
     output, _ = Open3.capture2e(wait_command)
-    JSON.parse(output).fetch("cluster").fetch("status") == "CREATING"
+    JSON.parse(output).fetch("cluster").fetch("status")
   end
 end
