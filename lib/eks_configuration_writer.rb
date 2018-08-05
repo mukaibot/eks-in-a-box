@@ -1,36 +1,36 @@
-require 'json'
 require 'logger'
-require 'open3'
+require 'yaml'
 
 class EksConfigurationWriter
-  attr_reader :logger, :vpc_name
-  CONFIG = "eks-box-config.yml"
+  attr_reader :logger, :vpc_id, :cluster_name, :role_arn
 
-  def initialize(vpc_name, cluster_name)
+  def initialize(vpc_id, cluster_name, role_arn)
     @logger       = Logger.new(STDOUT)
-    @vpc_name     = vpc_name
+    @vpc_id       = vpc_id
     @cluster_name = cluster_name
+    @role_arn     = role_arn
+    @config_hash  = config_hash(vpc_id, cluster_name, role_arn)
   end
 
   def call
+    File.open(config_file_name, 'w') do |f|
+      f.write(@config_hash.to_yaml)
+    end
 
-    describe_stack = "aws cloudformation describe-stacks --stack-name #{vpc_name}"
-
-    stack, stderr, status = Open3.capture3(describe_stack)
-
-    stackputs = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
+    logger.info "Wrote config to #{config_file_name}"
   end
 
   private
 
-  def config_hash(vpc_outputs, access_outputs)
-    {
-      vpc_id:  output_value(vpc_outputs, "Vpc"),
-      role_id: output_value(access_outputs, "RoleArn")
-    }
+  def config_file_name
+    "#{cluster_name}.config.yml"
   end
 
-  def output_value(outputs, key)
-    outputs.find { |out| out.fetch("OutputKey") == key }.fetch("OutputValue")
+  def config_hash(vpc_id, cluster_name, role_arn)
+    {
+      "vpc_id"       => vpc_id,
+      "role_arn"     => role_arn,
+      "cluster_name" => cluster_name
+    }
   end
 end

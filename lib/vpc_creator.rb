@@ -3,7 +3,7 @@ require 'logger'
 require 'open3'
 
 class VpcCreator
-  attr_reader :logger, :cluster_name, :role_arn
+  attr_reader :logger, :cluster_name, :role_arn, :vpc_id
 
   ACCESS_PARAMS = 'access_params.json'
 
@@ -80,7 +80,7 @@ class VpcCreator
     describe_stack        = "aws cloudformation describe-stacks --stack-name #{vpc_name}"
     stack, stderr, status = Open3.capture3(describe_stack)
 
-    vpc_id = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
+    @vpc_id = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
                .find { |out| out.fetch("OutputKey") == "Vpc" }
                .fetch("OutputValue")
 
@@ -94,7 +94,7 @@ class VpcCreator
                                .fetch("OutputValue")
 
     logger.debug "#{@cluster_name} IAM role is #{@role_arn}"
-    logger.info "VPC '#{vpc_name}' ready"
+    logger.info "VPC #{vpc_id} '#{vpc_name}' ready"
   end
 
   # Todo - extract this to bin/eks-box or similar
@@ -109,6 +109,10 @@ class VpcCreator
     File.open(ACCESS_PARAMS, 'w') do |f|
       f.write(access_params(vpc_id).to_json)
     end
+  end
+
+  def output_value(outputs, key)
+    outputs.find { |out| out.fetch("OutputKey") == key }.fetch("OutputValue")
   end
 
   def wait_command(stack)

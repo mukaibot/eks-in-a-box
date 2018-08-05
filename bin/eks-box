@@ -19,7 +19,8 @@ PrerequisiteChecker.new.check!
 ClientBinaryInstaller.new(PLATFORM).call
 vpc_creator = VpcCreator.new
 vpc_creator.call
-vpc_name = vpc_creator.vpc_name
+vpc_id = vpc_creator.vpc_id
 cluster_name = vpc_creator.cluster_name
-eks_config = EksConfigurationWriter.new(vpc_name, cluster_name).call
+role_arn = vpc_creator.role_arn
+eks_config = EksConfigurationWriter.new(vpc_id, cluster_name, role_arn).call
 # EksCreator.call
