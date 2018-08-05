@@ -19,15 +19,18 @@ class EksConfigurationWriter
     stack, stderr, status = Open3.capture3(describe_stack)
 
     stackputs = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
-
   end
 
   private
 
   def config_hash(vpc_outputs, access_outputs)
     {
-      vpc_id:  vpc_outputs.find { |out| out.fetch("OutputKey") == "Vpc" }.fetch("OutputValue"),
-      role_id: access_outputs.find { |out| out.fetch("OutputKey") == "Vpc" }.fetch("OutputValue"),
+      vpc_id:  output_value(vpc_outputs, "Vpc"),
+      role_id: output_value(access_outputs, "RoleArn")
     }
+  end
+
+  def output_value(outputs, key)
+    outputs.find { |out| out.fetch("OutputKey") == key }.fetch("OutputValue")
   end
 end
