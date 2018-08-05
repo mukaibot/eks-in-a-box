@@ -7,8 +7,10 @@ EKS-in-a-box is a Ruby program that will give you your own non-production EKS cl
 * Creates a VPC using rea-vpc (optional)
 * Configures an IAM role for you to assume to grant access to the cluster
 * Creates the cluster for you
+* Installs EKS-vendored versions of the binaries you need (kubectl, heptio aws authenticator) if you don't have them
+* Writes a kube-config for you
 
-The Ruby script uses only in-built functionality and does not require any Gem dependencies.
+EKS-in-a-box only uses native Ruby functionality and does not require any Gem dependencies. Cool!
 
 ## Dependencies
 * aws cli tool
@@ -25,3 +27,6 @@ The stacks will be named according to your cluster name, eg if you enter `my-clu
 * VPC stack called `my-cluster-vpc`
 * VPC access stack called `my-cluster-access`
 * EKS cluster called `my-cluster`
+
+## Dev notes
+This is some of the worst Ruby code I've written - Timothy
