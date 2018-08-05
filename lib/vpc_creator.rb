@@ -1,9 +1,10 @@
 require 'json'
 require 'logger'
 require 'open3'
+require 'eks_config'
 
 class VpcCreator
-  attr_reader :logger, :cluster_name, :role_arn, :vpc_id
+  attr_reader :logger, :cluster_name, :role_arn, :vpc_id, :eks_config
 
   ACCESS_PARAMS = 'access_params.json'
 
@@ -12,6 +13,7 @@ class VpcCreator
     @logger             = Logger.new(STDOUT)
     @availability_zone1 = @region + 'a'
     @availability_zone2 = @region + 'b'
+    @eks_config         = EksConfig.new
   end
 
   def call
@@ -68,33 +70,41 @@ class VpcCreator
       "--template-body file://templates/access.yaml",
       "--parameters file://access_params.json",
       "--region",
-      @region
+      @region,
+      "--capabilities",
+      "CAPABILITY_NAMED_IAM"
     ].join(" ")
   end
 
   # Todo - refactor me!
   def create_vpc
-    Open3.capture3(create_command(vpc_name))
-    Open3.capture3(wait_command(vpc_name))
+    logger.info "Ensuring VPC stack #{vpc_name}"
+    swallow_it, status = Open3.capture2e(create_command(vpc_name))
+    vpc_wait, status = Open3.capture2e(wait_command(vpc_name))
 
     describe_stack        = "aws cloudformation describe-stacks --stack-name #{vpc_name}"
-    stack, stderr, status = Open3.capture3(describe_stack)
+    stack, status = Open3.capture2e(describe_stack)
 
-    @vpc_id = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
-               .find { |out| out.fetch("OutputKey") == "Vpc" }
-               .fetch("OutputValue")
+    vpc_stack = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
+    @vpc_id = output_value(vpc_stack, "Vpc")
 
     dump_vpc_params(vpc_id)
-    access_stack, stderr, status = Open3.capture3(create_access_command(access_stack_name))
-    Open3.capture3(wait_command(access_stack_name))
-    describe_access_stack  = "aws cloudformation describe-stacks --stack-name #{access_stack_name}"
-    stack, stderr, status  = Open3.capture3(describe_access_stack)
-    @role_arn              = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
-                               .find { |out| out.fetch("OutputKey") == "RoleArn" }
-                               .fetch("OutputValue")
+    logger.info "Ensuring VPC access stack #{access_stack_name}"
+    access_stack, status = Open3.capture2e(create_access_command(access_stack_name))
+    Open3.capture2e(wait_command(access_stack_name))
+    describe_access_stack = "aws cloudformation describe-stacks --stack-name #{access_stack_name}"
+    stack, status = Open3.capture2e(describe_access_stack)
+    stackputs = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
+    @eks_config.role_arn = output_value(stackputs, "RoleArn")
+    @eks_config.security_group_id = output_value(stackputs, "SecurityGroup")
+    @eks_config.subnet_ids = %w(SubnetPublic1 SubnetPublic2 SubnetPrivate1 SubnetPrivate2).map do |key|
+      output_value(vpc_stack, key)
+    end
+    @eks_config.cluster_name = @cluster_name
+    @eks_config.vpc_id = vpc_id
 
-    logger.debug "#{@cluster_name} IAM role is #{@role_arn}"
-    logger.info "VPC #{vpc_id} '#{vpc_name}' ready"
+    logger.info "#{@cluster_name} IAM role is #{@eks_config.role_arn}"
+    logger.info "VPC #{vpc_id} ready"
   end
 
   # Todo - extract this to bin/eks-box or similar

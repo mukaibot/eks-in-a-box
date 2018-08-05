@@ -51,9 +51,9 @@ Resources:
             Resource: "*"
 
 Outputs:
-  SecurityGroups:
+  SecurityGroup:
     Description: Grants access to the Kubernetes API
-    Value: !Join [ ",", [ !Ref ControlPlaneSecurityGroup ] ]
+    Value: !Ref ControlPlaneSecurityGroup
 
   RoleArn:
     Description: Assuming this role grants admin access to the cluster

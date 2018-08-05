@@ -2,14 +2,13 @@ require 'logger'
 require 'yaml'
 
 class EksConfigurationWriter
-  attr_reader :logger, :vpc_id, :cluster_name, :role_arn
+  attr_reader :logger, :cluster_name
 
-  def initialize(vpc_id, cluster_name, role_arn)
+  def initialize(eks_config)
     @logger       = Logger.new(STDOUT)
-    @vpc_id       = vpc_id
-    @cluster_name = cluster_name
-    @role_arn     = role_arn
-    @config_hash  = config_hash(vpc_id, cluster_name, role_arn)
+    @config       = eks_config
+    @config_hash  = config_hash(eks_config)
+    @cluster_name = eks_config.cluster_name
   end
 
   def call
@@ -26,11 +25,13 @@ class EksConfigurationWriter
     "#{cluster_name}.config.yml"
   end
 
-  def config_hash(vpc_id, cluster_name, role_arn)
+  def config_hash(config)
     {
-      "vpc_id"       => vpc_id,
-      "role_arn"     => role_arn,
-      "cluster_name" => cluster_name
+      "vpc_id"       => config.vpc_id,
+      "role_arn"     => config.role_arn,
+      "cluster_name" => config.cluster_name,
+      "subnets"      => config.subnet_ids,
+      "access_group" => config.security_group_id
     }
   end
 end
