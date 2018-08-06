@@ -41,8 +41,8 @@ class ClientBinaryInstaller
         url:  "https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/bin/#{platform}/amd64/kubectl"
       },
       {
-        name: 'heptio-authenticator-aws',
-        url:  "https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/bin/#{platform}/amd64/heptio-authenticator-aws"
+        name: 'aws-iam-authenticator',
+        url: "https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/#{platform}/amd64/aws-iam-authenticator",
       }
     ]
   end

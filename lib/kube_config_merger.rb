@@ -79,14 +79,12 @@ class KubeConfigMerger
       'name' => AWS_USER,
       'user' => {
         'exec' => {
-          'command'    => 'heptio-authenticator-aws',
+          'command'    => 'aws-iam-authenticator',
           'apiVersion' => 'client.authentication.k8s.io/v1alpha1',
           'args'       => [
             'token',
             '-i',
-            cluster_name,
-            '-r',
-            role
+            cluster_name
           ]
         }
       }
