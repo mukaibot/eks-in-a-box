@@ -33,8 +33,16 @@ class VpcCreator
 
   private
 
+  def rea_as_role
+    ENV.fetch("AWS_ROLE_ARN")
+  end
+
   def access_params(vpc_id)
     [
+      {
+        "ParameterKey"   => "AllowAccessFromIAMRole",
+        "ParameterValue" => rea_as_role,
+      },
       {
         "ParameterKey"   => "ClusterName",
         "ParameterValue" => @cluster_name,

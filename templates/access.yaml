@@ -3,6 +3,9 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Amazon EKS Access'
 
 Parameters:
+  AllowAccessFromIAMRole:
+    Type: String
+    Description: Which IAM role allows you to assume the role that grants access to the cluster
   ClusterName:
     Type: String
     Description: Name of the EKS cluster
@@ -31,6 +34,12 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
+        -
+          Effect: "Allow"
+          Principal:
+            AWS: !Ref AllowAccessFromIAMRole
+          Action:
+          - "sts:AssumeRole"
         -
           Effect: "Allow"
           Principal:

@@ -103,9 +103,9 @@ class KubeConfigMerger
 
   def merge_config
     config          = YAML.load_file(@kube_config)
-    merged_users    = hash_with_value?(config, "users", AWS_USER) ? {} : config.dig("users") << user
-    merged_clusters = hash_with_value?(config, "clusters", cluster_name) ? {} : config.dig("clusters") << cluster
-    merged_contexts = hash_with_value?(config, "contexts", cluster_name) ? {} : config.dig("contexts") << context
+    merged_users    = hash_with_value?(config, "users", AWS_USER) ? {} : config.dig("users") + [user]
+    merged_clusters = hash_with_value?(config, "clusters", cluster_name) ? {} : config.dig("clusters") + [cluster]
+    merged_contexts = hash_with_value?(config, "contexts", cluster_name) ? {} : config.dig("contexts") + [context]
     new_config      = config.merge({ "users" => merged_users })
                         .merge({"clusters" => merged_clusters})
                         .merge({"contexts" => merged_contexts})
