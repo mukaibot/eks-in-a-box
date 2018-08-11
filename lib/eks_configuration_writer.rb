@@ -28,12 +28,13 @@ class EksConfigurationWriter
 
   def config_hash(config)
     {
-      "cluster_name" => config.cluster_name,
-      "access_group" => config.security_group_id,
-      "region"       => config.region,
-      "role_arn"     => config.role_arn,
-      "subnets"      => config.subnet_ids,
-      "vpc_id"       => config.vpc_id,
+      "access_group"    => config.security_group_id,
+      "cluster_name"    => config.cluster_name,
+      "private_subnets" => config.private_subnets,
+      "region"          => config.region,
+      "role_arn"        => config.role_arn,
+      "subnets"         => config.subnet_ids,
+      "vpc_id"          => config.vpc_id,
     }
   end
 end

@@ -19,13 +19,6 @@ Resources:
     Properties:
       GroupDescription: Allows accessing the EKS Kubernetes API externally
       VpcId: !Ref VpcId
-      SecurityGroupIngress:
-        -
-          CidrIp: 203.13.23.0/27
-          Description: REA ETS IP Range
-          FromPort: 443
-          IpProtocol: TCP
-          ToPort: 443
 
   ClusterRole:
     Type: "AWS::IAM::Role"

@@ -1,4 +1,9 @@
-deps
-vpc_params.json
 access_params.json
 *.config.yml
+deps
+*.key
+*.key.pub
+node_params.json
+vpc_params.json
+
+nat_params.json

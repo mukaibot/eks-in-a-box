@@ -8,7 +8,8 @@ class VpcCreator
 
   ACCESS_PARAMS = 'access_params.json'
 
-  def initialize
+  def initialize(cluster_name)
+    @cluster_name       = cluster_name
     @region             = 'us-west-2'
     @logger             = Logger.new(STDOUT)
     @availability_zone1 = @region + 'a'
@@ -17,8 +18,8 @@ class VpcCreator
   end
 
   def call
-    get_cluster_name
     write_vpc_params
+    write_nat_params
     create_vpc
     self
   end
@@ -29,6 +30,10 @@ class VpcCreator
 
   def vpc_name
     @cluster_name + "-vpc"
+  end
+
+  def vpc_nat_name
+    vpc_name + "-nat"
   end
 
   private
@@ -84,50 +89,70 @@ class VpcCreator
     ].join(" ")
   end
 
+  def create_nat_command
+    [
+      "aws",
+      "cloudformation",
+      "create-stack",
+      "--stack-name",
+      vpc_nat_name,
+      "--template-body file://deps/rea-vpc/nat.json",
+      "--parameters file://nat_params.json",
+      "--region",
+      @region
+    ].join(" ")
+  end
+
   # Todo - refactor me!
   def create_vpc
     logger.info "Ensuring VPC stack #{vpc_name}"
     swallow_it, status = Open3.capture2e(create_command(vpc_name))
-    vpc_wait, status = Open3.capture2e(wait_command(vpc_name))
+    vpc_wait, status   = Open3.capture2e(wait_command(vpc_name))
+    logger.info "Ensuring VPC NAT stack #{vpc_nat_name}"
+    add_nat, status = Open3.capture2e(create_nat_command)
+    nat_wait, status   = Open3.capture2e(wait_command(vpc_nat_name))
 
-    describe_stack        = "aws cloudformation describe-stacks --stack-name #{vpc_name}"
-    stack, status = Open3.capture2e(describe_stack)
+    describe_stack = "aws cloudformation describe-stacks --stack-name #{vpc_name}"
+    stack, status  = Open3.capture2e(describe_stack)
 
     vpc_stack = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
-    @vpc_id = output_value(vpc_stack, "Vpc")
+    @vpc_id   = output_value(vpc_stack, "Vpc")
 
     dump_vpc_params(vpc_id)
     logger.info "Ensuring VPC access stack #{access_stack_name}"
     access_stack, status = Open3.capture2e(create_access_command(access_stack_name))
     Open3.capture2e(wait_command(access_stack_name))
-    describe_access_stack = "aws cloudformation describe-stacks --stack-name #{access_stack_name}"
-    stack, status = Open3.capture2e(describe_access_stack)
-    stackputs = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
-    @eks_config.role_arn = output_value(stackputs, "RoleArn")
+    describe_access_stack         = "aws cloudformation describe-stacks --stack-name #{access_stack_name}"
+    stack, status                 = Open3.capture2e(describe_access_stack)
+    stackputs                     = JSON.parse(stack).fetch("Stacks").first.fetch("Outputs")
+    @eks_config.role_arn          = output_value(stackputs, "RoleArn")
     @eks_config.security_group_id = output_value(stackputs, "SecurityGroup")
-    @eks_config.subnet_ids = %w(SubnetPublic1 SubnetPublic2 SubnetPrivate1 SubnetPrivate2).map do |key|
+    @eks_config.subnet_ids        = %w(SubnetPublic1 SubnetPublic2 SubnetPrivate1 SubnetPrivate2).map do |key|
       output_value(vpc_stack, key)
     end
-    @eks_config.cluster_name = @cluster_name
-    @eks_config.vpc_id = vpc_id
-    @eks_config.region = @region
+    private_subnets               = [output_value(vpc_stack, "SubnetPrivate1"), output_value(vpc_stack, "SubnetPrivate2")]
+    @eks_config.cluster_name      = @cluster_name
+    @eks_config.vpc_id            = vpc_id
+    @eks_config.region            = @region
+    @eks_config.private_subnets   = private_subnets
 
     logger.info "#{@cluster_name} IAM role is #{@eks_config.role_arn}"
     logger.info "VPC #{vpc_id} ready"
-  end
-
-  # Todo - extract this to bin/eks-box or similar
-  def get_cluster_name
-    logger.info "What should we call your cluster? Short DNS name is recommended, a-z, dashes and dots are allowed. EG: my-cluster"
-    @cluster_name = gets.chomp
-
-    "Need a valid cluster name" if @cluster_name.nil? || @cluster_name.empty?
   end
 
   def dump_vpc_params(vpc_id)
     File.open(ACCESS_PARAMS, 'w') do |f|
       f.write(access_params(vpc_id).to_json)
     end
+  end
+
+  def nat_params
+    [
+      {
+        "ParameterKey"   => "VpcName",
+        "ParameterValue" => vpc_name
+      }
+    ]
   end
 
   def output_value(outputs, key)
@@ -145,6 +170,10 @@ class VpcCreator
       "--region",
       @region
     ].join(" ")
+  end
+
+  def write_nat_params
+    File.open('nat_params.json', 'w') { |f| f.puts nat_params.to_json }
   end
 
   def write_vpc_params

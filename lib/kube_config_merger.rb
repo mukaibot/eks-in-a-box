@@ -30,7 +30,7 @@ class KubeConfigMerger
   end
 
   def certificate_authority
-    @certificate_authority ||= `aws eks describe-cluster --name #{cluster_name} --query cluster.certificateAuthority.data`.chomp.gsub('"','')
+    @certificate_authority ||= `aws eks describe-cluster --name #{cluster_name} --query cluster.certificateAuthority.data`.chomp.gsub('"', '')
   end
 
   def cluster_url
@@ -101,14 +101,17 @@ class KubeConfigMerger
 
   def merge_config
     config          = YAML.load_file(@kube_config)
-    merged_users    = hash_with_value?(config, "users", AWS_USER) ? {} : config.dig("users") + [user]
-    merged_clusters = hash_with_value?(config, "clusters", cluster_name) ? {} : config.dig("clusters") + [cluster]
-    merged_contexts = hash_with_value?(config, "contexts", cluster_name) ? {} : config.dig("contexts") + [context]
-    new_config      = config.merge({ "users" => merged_users })
-                        .merge({"clusters" => merged_clusters})
-                        .merge({"contexts" => merged_contexts})
-                        .merge({ 'current-context' => cluster_name })
-                        .to_yaml
+    merged_users    = hash_with_value?(config, "users", AWS_USER) ? {} : config.dig("users").to_a + [user]
+    merged_clusters = hash_with_value?(config, "clusters", cluster_name) ? {} : config.dig("clusters").to_a + [cluster]
+    merged_contexts = hash_with_value?(config, "contexts", cluster_name) ? {} : config.dig("contexts").to_a + [context]
+
+    abort "There was a problem generating your kubeconfig. Please add the following manually:\n#{cluster_config}" if (merged_contexts.empty? && merged_users.empty? && merged_clusters.empty?)
+
+    new_config = config.merge({ "users" => merged_users })
+                   .merge({ "clusters" => merged_clusters })
+                   .merge({ "contexts" => merged_contexts })
+                   .merge({ 'current-context' => cluster_name })
+                   .to_yaml
 
     File.open(@kube_config, 'w') { |f| f.write new_config }
 
