@@ -23,11 +23,11 @@ ClientBinaryInstaller.new(PLATFORM).call
 puts "What should we call your cluster? Short DNS name is recommended, a-z, dashes and dots are allowed. EG: my-cluster"
 cluster_name = gets.chomp
 abort("Need a valid cluster name") if cluster_name.nil? || cluster_name.empty?
+ssh_key_creator     = SSHKeyCreator.new(cluster_name).upsert
 
 vpc_creator = VpcCreator.new(cluster_name)
 vpc_creator.call
 config              = vpc_creator.eks_config
-ssh_key_creator     = SSHKeyCreator.new(cluster_name).upsert
 eks_config          = EksConfigurationWriter.new(config).call
 config.key_name = ssh_key_creator.key_name
 

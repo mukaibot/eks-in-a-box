@@ -1,9 +1,9 @@
 access_params.json
+bastion_params.json
 *.config.yml
 deps
 *.key
 *.key.pub
+nat_params.json
 node_params.json
 vpc_params.json
-
-nat_params.json

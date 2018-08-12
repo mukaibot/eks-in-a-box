@@ -28,6 +28,10 @@ class VpcCreator
     @cluster_name + "-access"
   end
 
+  def bastion_stack_name
+    vpc_name + "-bastion"
+  end
+
   def vpc_name
     @cluster_name + "-vpc"
   end
@@ -89,6 +93,20 @@ class VpcCreator
     ].join(" ")
   end
 
+  def create_bastion_command
+    [
+      "aws",
+      "cloudformation",
+      "create-stack",
+      "--stack-name",
+      bastion_stack_name,
+      "--template-body file://templates/bastion.yaml",
+      "--parameters file://bastion_params.json",
+      "--region",
+      @region
+    ].join(" ")
+  end
+
   def create_nat_command
     [
       "aws",
@@ -136,6 +154,10 @@ class VpcCreator
     @eks_config.region            = @region
     @eks_config.private_subnets   = private_subnets
 
+    write_bastion_params
+    logger.info "Ensuring bastion stack #{bastion_stack_name}"
+    Open3.capture2e(create_bastion_command) {|stdouterr, status| logger.debug stdouterr }
+
     logger.info "#{@cluster_name} IAM role is #{@eks_config.role_arn}"
     logger.info "VPC #{vpc_id} ready"
   end
@@ -144,6 +166,23 @@ class VpcCreator
     File.open(ACCESS_PARAMS, 'w') do |f|
       f.write(access_params(vpc_id).to_json)
     end
+  end
+
+  def bastion_params
+    [
+      {
+        "ParameterKey"   => "KeyName",
+        "ParameterValue" => @cluster_name
+      },
+      {
+        "ParameterKey"   => "VpcId",
+        "ParameterValue" => @vpc_id
+      },
+      {
+        "ParameterKey"   => "SubnetId",
+        "ParameterValue" => (@eks_config.subnet_ids - @eks_config.private_subnets).first
+      }
+    ]
   end
 
   def nat_params
@@ -170,6 +209,10 @@ class VpcCreator
       "--region",
       @region
     ].join(" ")
+  end
+
+  def write_bastion_params
+    File.open('bastion_params.json', 'w') { |f| f.puts bastion_params.to_json }
   end
 
   def write_nat_params
