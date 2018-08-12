@@ -21,8 +21,8 @@ class EksNodeCreator
     write_params
     node_stack, status = Open3.capture2e(create_nodes_command)
     vpc_wait, status   = Open3.capture2e(wait_command)
+    apply_node_config_map
     if status.exitstatus == 0
-      apply_node_config_map
       logger.info "Nodes created successfully"
     else
       logger.error node_stack
@@ -51,7 +51,8 @@ class EksNodeCreator
       NODE_POLICY_FILE
     ].join(" ")
 
-    Open3.capture2e(apply_command) { |stdouterr| logger.debug stdouterr }
+    logger.debug apply_command
+    Open3.capture2(apply_command) { |stdout| logger.debug stdout }
   end
 
   def create_nodes_command

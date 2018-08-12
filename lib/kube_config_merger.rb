@@ -92,7 +92,7 @@ class KubeConfigMerger
   end
 
   def existing_config?
-    true
+    File.exist?(@kube_config)
   end
 
   def hash_with_value?(collection, key, value)

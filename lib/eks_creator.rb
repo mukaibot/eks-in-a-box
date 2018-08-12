@@ -90,7 +90,7 @@ class EksCreator
   def wait_for_cluster
     while poll do
       logger.debug "Waiting for cluster"
-      sleep 15
+      sleep 30
     end
   end
 

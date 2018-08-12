@@ -6,4 +6,5 @@ deps
 *.key.pub
 nat_params.json
 node_params.json
+node_policy.yaml
 vpc_params.json
