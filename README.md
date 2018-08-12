@@ -19,7 +19,7 @@ EKS-in-a-box only uses native Ruby functionality and does not require any Gem de
 ## Usage
 Create a new EKS cluster in us-west-2
 
-`bin/eks-box # will prompt you for cluster name`
+`rea-as saml REAio bin/eks-box # will prompt you for cluster name`
 
 The stacks will be named according to your cluster name, eg if you enter `my-cluster` as the name, the script will create:
 
