@@ -50,6 +50,7 @@ class EksCreator
 
   def initiate_creation
     logger.info "Creating cluster #{cluster_name}"
+    logger.debug create_command
     Open3.capture2e(create_command) do |stderrout, _|
       logger.info stderrout
     end
@@ -88,6 +89,7 @@ class EksCreator
   end
 
   def wait_for_cluster
+    logger.debug wait_command
     while poll do
       logger.debug "Waiting for cluster"
       sleep 30
