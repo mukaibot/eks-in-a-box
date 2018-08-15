@@ -10,7 +10,7 @@ class VpcCreator
 
   def initialize(cluster_name)
     @cluster_name       = cluster_name
-    @region             = 'us-west-2'
+    @region             = 'us-east-1'
     @logger             = Logger.new(STDOUT)
     @availability_zone1 = @region + 'a'
     @availability_zone2 = @region + 'b'
