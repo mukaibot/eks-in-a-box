@@ -18,7 +18,7 @@ class VpcCreator
   end
 
   def call
-    write_vpc_params
+    write_vpc_params unless File.exist?('vpc_params.json')
     write_nat_params
     create_vpc
     self
