@@ -12,7 +12,8 @@ module Create
     end
 
     def call
-      initiate_creation
+      status = initiate_creation
+      exit status.to_i if status.to_i > 0
 
       self
     end
