@@ -11,6 +11,7 @@ module Commands
 
         if config.valid?
           ::Create::EksCreator.new(config, logger).call
+          Commands::Update.call(config, logger)
         else
           logger.fatal "Missing values for #{config.missing_attributes.join(', ')}"
           exit 1
