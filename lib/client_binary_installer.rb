@@ -43,16 +43,30 @@ class ClientBinaryInstaller
       {
         name: 'aws-iam-authenticator',
         url: "https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/#{platform}/amd64/aws-iam-authenticator",
+      },
+      {
+        name: 'eksctl',
+        url: "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_#{platform}_amd64.tar.gz"
       }
     ]
   end
 
   def install(bin)
     name = bin.fetch(:name)
+    dest = File.join(@bin_path, name)
     FileUtils.mkdir_p(@bin_path)
     @installed_binary = true
     logger.info "Installing #{name} to #{@bin_path}"
-    dest = File.join(@bin_path, name)
+    bin.fetch(:url).end_with?('.gz') ? tarred_bin(bin, dest) : go_bin(bin, dest)
+  end
+
+  private
+
+  def tarred_bin(bin, dest)
+    `curl --silent --location "#{bin.fetch(:url)}" | tar xz -C /tmp && mv /tmp/eksctl #{dest}`
+  end
+
+  def go_bin(bin, dest)
     File.open(dest, "w") { |f| IO.copy_stream(open(bin.fetch(:url)), f) }
     FileUtils.chmod(755, dest)
   end
