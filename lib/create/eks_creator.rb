@@ -13,12 +13,6 @@ module Create
 
     def call
       initiate_creation
-      # wait_for_cluster
-      # if cluster_status == "ACTIVE"
-      #   logger.info "Success! Run '#{wait_command}' to get details"
-      # else
-      #   logger.error "Aww shit. Something bad happened and your cluster did not become active. Run '#{wait_command}' to debug."
-      # end
 
       self
     end

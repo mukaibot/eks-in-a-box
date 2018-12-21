@@ -5,6 +5,7 @@ require 'logger'
 require 'optparse'
 require 'commands/create'
 require 'commands/generate'
+require 'commands/update'
 require 'eks_config'
 
 logger  = Logger.new(STDOUT)
@@ -29,13 +30,32 @@ end.parse!
 
 abort "Not sure what I should do. Run eks-box --help" if options.empty?
 
-if options.dig(:operation) == 'create'
+
+def do_create(options, logger)
   abort "--config not provided" if options[:config].nil?
   config = EksConfig.new
   YAML.load_file(options[:config])
     .map { |pair| config.send("#{pair.first}=", pair.last) }
   logger.info "Using config from file #{options[:config]}"
   Commands::Create.call(config, logger)
-else
+end
+
+def do_update(options, logger)
+  abort "--config not provided" if options[:config].nil?
+  config = EksConfig.new
+  YAML.load_file(options[:config])
+    .map { |pair| config.send("#{pair.first}=", pair.last) }
+  logger.info "Using config from file #{options[:config]}"
+  Commands::Update.call(config, logger)
+end
+
+case options.dig(:operation)
+when 'create'
+  do_create(options, logger)
+when 'generate'
   Commands::Generate.call
+when 'update'
+  do_update(options, logger)
+else
+  abort("Unknown option '#{options.dig(:operation)}'")
 end
