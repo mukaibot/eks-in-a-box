@@ -43,38 +43,15 @@ module Create
     def initiate_creation
       logger.info "Creating cluster '#{config.name}'"
       logger.debug create_command
-      # Open3.capture2e(create_command) do |stderrout, _|
-      #   logger.info stderrout
-      # end
+      status = Open3.popen2e(create_command) do |_, stdout_stderr, wait_thread|
+        while (line = stdout_stderr.gets) do
+          puts line
+        end
+
+        wait_thread.value
+      end
+
+      status
     end
-
-    # def wait_command
-    #   [
-    #     "aws",
-    #     "eks",
-    #     "describe-cluster",
-    #     "--name",
-    #     cluster_name,
-    #     "--region",
-    #     region
-    #   ].join(" ")
-    # end
-
-    # def wait_for_cluster
-    #   logger.debug wait_command
-    #   while poll do
-    #     logger.debug "Waiting for cluster"
-    #     sleep 30
-    #   end
-    # end
-    #
-    # def poll
-    #   cluster_status == "CREATING"
-    # end
-    #
-    # def cluster_status
-    #   output, _ = Open3.capture2e(wait_command)
-    #   JSON.parse(output).fetch("cluster").fetch("status")
-    # end
   end
 end
