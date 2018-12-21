@@ -4,6 +4,7 @@ PLATFORM = `uname`.chomp.downcase
 require 'logger'
 require 'optparse'
 require 'commands/create'
+require 'commands/generate'
 require 'eks_config'
 
 logger  = Logger.new(STDOUT)
@@ -28,7 +29,6 @@ end.parse!
 
 abort "Not sure what I should do. Run eks-box --help" if options.empty?
 
-
 if options.dig(:operation) == 'create'
   abort "--config not provided" if options[:config].nil?
   config = EksConfig.new
@@ -36,4 +36,6 @@ if options.dig(:operation) == 'create'
     .map { |pair| config.send("#{pair.first}=", pair.last) }
   logger.info "Using config from file #{options[:config]}"
   Commands::Create.call(config, logger)
+else
+  Commands::Generate.call
 end
