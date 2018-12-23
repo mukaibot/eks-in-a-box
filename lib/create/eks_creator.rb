@@ -22,17 +22,19 @@ module Create
 
     def create_command
       [
-        "eksctl",
-        "create",
-        "cluster",
+        'eksctl',
+        'create',
+        'cluster',
+        '--node-ami=auto',
+        '--node-type=t3.medium',
         "--region=#{config.region}",
-        "--node-private-networking",
+        '--node-private-networking',
         "--name=#{config.name}",
-        "--ssh-access",
+        '--ssh-access',
         "--ssh-public-key=#{config.keypair}",
         "--vpc-private-subnets=#{config.private_subnets.join(',')}",
         "--vpc-public-subnets=#{config.public_subnets.join(',')}",
-      ].join(" ")
+      ].join(' ')
     end
 
     def initiate_creation
