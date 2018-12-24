@@ -2,33 +2,42 @@
 _The easy way to spin up Kubernetes at REA_
 
 # About
-EKS-in-a-box is a Ruby program that will give you your own non-production EKS cluster in about 20 minutes by issuing a single command!
+EKS-in-a-box is a Ruby program that will give you your own EKS cluster, with addons that make it actually useful. This is the server component to using REA Shipper and Kubernetes.
 
-* Creates a VPC with a bastion using rea-vpc
-* Creates the cluster for you
-* Installs EKS-vendored versions of the binaries you need (kubectl, heptio aws authenticator) if you don't have them
-* Writes a kube-config for you
+Here's what you get:
+* An EKS cluster
+* An autoscaling group of nodes on a private subnet in Your VPC
+* Client binaries for eksctl, kubectl, IAM authenticator and Helm
+* The Helm package manager
+* Metrics server (enables `kubectl top`)
+* The ability to update the components on your cluster to stay in sync with EKS-in-a-box
+
+Here's what you're getting Really Soon
+* An Ingress controller
+* Logs straight into Splunk
+* IAM integration (the server half of what REA Shipper needs to give your Pods IAM roles)
+* Route 53 integration via External DNS
 
 EKS-in-a-box only uses native Ruby functionality and does not require any Gem dependencies. Cool!
 
 ## Dependencies
-* aws cli tool
-* git (configured with SSH Key access)
 * ruby (whatever OS-X includes is fine)
 
 ## Usage
-Create a new EKS cluster in us-west-2
+### View the help
+Shows the usage instructions
+`bin/eks-box --help`
 
-`rea-as saml REAio bin/eks-box # will prompt you for cluster name`
+### Generate a sample config
+Generates a sample configuration file that you can edit
+`bin/eks-box --operation generate`
 
-The stacks will be named according to your cluster name, eg if you enter `my-cluster` as the name, the script will create:
+### Create your cluster
+Create an EKS cluster from a defined configuration file
+`rea-as saml YourRole bin/eks-box -o create --config yourconfig.yml`
 
-* VPC stack called `my-cluster-vpc`
-* VPC access stack called `my-cluster-access`
-* VPC NAT stack called `my-cluster-vpc-nat`
-* VPC Bastion stack called `my-cluster-vpc-bastion`
-* EKS cluster node stack called `my-cluster-nodes`
-* EKS cluster called `my-cluster`
+### Keep your cluster updated
+Updates your cluster to use the latest components / features of eks-in-a-box
+`rea-as saml YourRole bin/eks-box -o update --config yourconfig.yml`
 
-## Dev notes
-This is some of the worst Ruby code I've written - Timothy
+
