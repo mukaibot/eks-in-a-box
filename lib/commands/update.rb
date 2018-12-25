@@ -5,7 +5,7 @@ module Commands
     class << self
       def call(config, logger)
         validate!(config)
-        ::Update::ComponentInstaller.call(logger)
+        ::Update::ComponentInstaller.call(config, logger)
       end
 
       private

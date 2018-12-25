@@ -10,10 +10,10 @@ Here's what you get:
 * Client binaries for eksctl, kubectl, IAM authenticator and Helm
 * The Helm package manager
 * Metrics server (enables `kubectl top`)
+* An Ingress controller, terminating SSL (if you provide an ACM cert ARN)
 * The ability to update the components on your cluster to stay in sync with EKS-in-a-box
 
 Here's what you're getting Really Soon
-* An Ingress controller
 * Logs straight into Splunk
 * IAM integration (the server half of what REA Shipper needs to give your Pods IAM roles)
 * Route 53 integration via External DNS

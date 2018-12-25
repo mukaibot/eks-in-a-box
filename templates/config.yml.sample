@@ -11,3 +11,4 @@ public_subnets:
   - subnet-376cf441
 vpc_id: vpc-b55ef4d1
 keypair: mad-team
+acm_ingress_cert_arn: 'arn:aws:acm:ap-southeast-2:475385300542:certificate/c6ba0664-7788-459d-b006-4a1bd3882f4e'

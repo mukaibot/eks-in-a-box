@@ -5,10 +5,10 @@ module Update
     MAX_ATTEMPTS = 100
 
     class << self
-      def call(logger)
+      def call(config, logger)
         configure_helm(logger) if helm_unconfigured?(logger)
         apply_manifests(logger) if manifests.any?
-        helminate(logger)
+        helminate(config, logger)
       end
 
       private
@@ -37,20 +37,23 @@ module Update
       end
 
       def helm_command(chart)
-        values = chart.fetch(:params).map { |k, v| "#{k}=#{v}" }.join("--values ")
+        values = chart.fetch(:params).join(',')
+        values = values.empty? ? nil : "--set #{values}"
         [
           "helm upgrade #{chart.fetch(:name)}",
           "#{chart.fetch(:channel)}/#{chart.fetch(:name)}",
           '--install',
+          '--namespace kube-system',
           "--version #{chart.fetch(:version)}",
           values
         ].compact.join(' ')
       end
 
-      def helminate(logger)
-        logger.info("Using Helm to install #{Charts::DEFAULTS.size} charts")
+      def helminate(config, logger)
+        charts = Charts.all(config)
+        logger.info("Using Helm to install #{charts.size} charts")
 
-        Charts::DEFAULTS.each do |chart|
+        charts.each do |chart|
           logger.debug("Executing '#{helm_command(chart)}'")
           status = Open3.popen2e(helm_command(chart)) do |_, stdout_stderr, wait_thread|
             while (line = stdout_stderr.gets) do
