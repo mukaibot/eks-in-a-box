@@ -22,6 +22,7 @@ EKS-in-a-box only uses native Ruby functionality and does not require any Gem de
 
 ## Dependencies
 * ruby (whatever OS-X includes is fine)
+* curl
 
 ## Usage
 ### View the help
