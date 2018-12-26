@@ -1,14 +1,24 @@
 ---
 # Sample config for eks-in-a-box
 # This is configured to Devlob Staging in Sydney
+
+# Mandatory configuration params
 name: ekstatic
+vpc_id: vpc-b55ef4d1
+keypair: mad-team
+region: ap-southeast-2
 private_subnets:
   - subnet-07ea9c63
   - subnet-346cf442
-region: ap-southeast-2
 public_subnets:
   - subnet-01ea9c65
   - subnet-376cf441
-vpc_id: vpc-b55ef4d1
-keypair: mad-team
+# Optional configuration params
+
+# ARN of an ACM cert to use on the Ingress load balancer
+# Configuring this will terminate SSL on the ELB
 acm_ingress_cert_arn: 'arn:aws:acm:ap-southeast-2:475385300542:certificate/c6ba0664-7788-459d-b006-4a1bd3882f4e'
+# Size of each node's disk in GB
+node_ebs_size: 50
+# Instance size for each node
+node_type: t3.medium
