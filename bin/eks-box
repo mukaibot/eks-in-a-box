@@ -31,32 +31,22 @@ end.parse!
 
 abort "Not sure what I should do. Run eks-box --help" if options.empty?
 
-
-def do_create(options, logger)
+def load_config(options, logger)
   abort "--config not provided" if options[:config].nil?
   config = EksConfig.new
   YAML.load_file(options[:config])
     .map { |pair| config.send("#{pair.first}=", pair.last) }
   logger.info "Using config from file #{options[:config]}"
-  Commands::Create.call(config, logger)
-end
-
-def do_update(options, logger)
-  abort "--config not provided" if options[:config].nil?
-  config = EksConfig.new
-  YAML.load_file(options[:config])
-    .map { |pair| config.send("#{pair.first}=", pair.last) }
-  logger.info "Using config from file #{options[:config]}"
-  Commands::Update.call(config, logger)
+  config
 end
 
 case options.dig(:operation)
 when 'create'
-  do_create(options, logger)
+  Commands::Create.call(load_config(options, logger), logger)
 when 'generate'
   Commands::Generate.call
 when 'update'
-  do_update(options, logger)
+  Commands::Update.call(load_config(options, logger), logger)
 when 'prereqs'
   Commands::Prereqs.call
 else
