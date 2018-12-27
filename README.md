@@ -11,6 +11,7 @@ Here's what you get:
 * The Helm package manager
 * Metrics server (enables `kubectl top`)
 * An Ingress controller, terminating SSL (if you provide an ACM cert ARN)
+* Cluster Autoscaler (scales nodes up and down as required)
 * The ability to update the components on your cluster to stay in sync with EKS-in-a-box
 
 Here's what you're getting Really Soon
@@ -23,6 +24,7 @@ EKS-in-a-box only uses native Ruby functionality and does not require any Gem de
 ## Dependencies
 * ruby (whatever OS-X includes is fine)
 * curl
+* aws cli
 
 ## Usage
 ### View the help

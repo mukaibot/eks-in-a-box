@@ -10,6 +10,7 @@ module Prereqs
 
     def check!
       check_awscli!
+      check_curl!
       self
     end
 
@@ -18,6 +19,12 @@ module Prereqs
     def check_awscli!
       if which("aws").nil?
         abort "Could not find 'aws' in your path. Please install this to continue."
+      end
+    end
+
+    def check_curl!
+      if which("curl").nil?
+        abort "Could not find 'curl' in your path. Please install this to continue."
       end
     end
 
