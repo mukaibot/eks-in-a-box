@@ -7,6 +7,7 @@ require 'update/charts'
 module Update
   class ComponentInstaller
     MAX_ATTEMPTS = 100
+    NAMESPACE    = 'eks-in-a-box'
 
     class << self
       def call(config, logger)
@@ -56,7 +57,8 @@ module Update
           "helm upgrade #{chart.fetch(:name)}",
           "#{chart.fetch(:channel)}/#{chart.fetch(:name)}",
           '--install',
-          '--namespace kube-system',
+          "--namespace #{NAMESPACE}",
+          "--tiller-namespace #{NAMESPACE}",
           "--version #{chart.fetch(:version)}",
           chart_values(chart, logger)
         ].compact.join(' ')
@@ -97,7 +99,7 @@ module Update
 
       def configure_helm(logger)
         logger.debug('Configuring Helm')
-        status = Open3.popen2e('kubectl create serviceaccount --namespace kube-system tiller') do |_, stdout_stderr, wait_thread|
+        status = Open3.popen2e("kubectl create serviceaccount --namespace #{NAMESPACE} tiller") do |_, stdout_stderr, wait_thread|
           while (line = stdout_stderr.gets)
             logger.debug line.chomp
           end
@@ -105,7 +107,7 @@ module Update
           wait_thread.value
         end
         abort('Error creating Helm service account') unless status.to_i.zero?
-        status = Open3.popen2e('kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller') do |_, stdout_stderr, wait_thread|
+        status = Open3.popen2e("kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=#{NAMESPACE}:tiller") do |_, stdout_stderr, wait_thread|
           while (line = stdout_stderr.gets)
             logger.debug line.chomp
           end
@@ -115,7 +117,7 @@ module Update
 
         abort('Error configuring Helm service account') unless status.to_i.zero?
 
-        Open3.popen2e('helm init --service-account tiller') do |_, stdout_stderr, wait_thread|
+        Open3.popen2e("helm init --service-account tiller --tiller-namespace #{NAMESPACE}") do |_, stdout_stderr, wait_thread|
           while (line = stdout_stderr.gets)
             logger.debug line.chomp
           end
