@@ -16,15 +16,34 @@ module Update
             name:    'nginx-ingress',
             version: '1.1.1',
             params:  ingress_params(config)
-          }
+          },
+          {
+            channel: 'stable',
+            name:    'cluster-autoscaler',
+            version: '0.11.0',
+            params:  cluster_autoscaler_params(config)
+          },
         ]
       end
 
       private
 
+      def cluster_autoscaler_params(config)
+        {
+          'autoDiscovery' => {
+            'clusterName' => config.name
+          },
+          'awsRegion'     => config.region,
+          'sslCertPath'   => '/etc/kubernetes/pki/ca.crt',
+          'rbac'          => {
+            'create' => true
+          }
+        }
+      end
+
       def ingress_params(config)
-        cert       = config.acm_ingress_cert_arn
-        tag        = 'service.beta.kubernetes.io'
+        cert = config.acm_ingress_cert_arn
+        tag  = 'service.beta.kubernetes.io'
         return {} if cert.nil?
 
         params = {

@@ -30,6 +30,7 @@ module Create
         "--node-volume-size=#{config.node_ebs_size}",
         "--region=#{config.region}",
         '--node-private-networking',
+        "--tags k8s.io/cluster-autoscaler/enabled=true,kubernetes.io/cluster/#{config.name}=true",
         "--name=#{config.name}",
         '--ssh-access',
         "--ssh-public-key=#{config.keypair}",
