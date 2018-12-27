@@ -91,7 +91,7 @@ module Update
       end
 
       def helm_unconfigured?(logger)
-        _version, status = Open3.capture2e('helm version')
+        _version, status = Open3.capture2e("helm version --tiller-namespace #{NAMESPACE}")
         configured       = status.to_i.zero?
         configured ? logger.debug('Helm is configured') : logger.debug('Helm is not configured')
         !configured
@@ -99,6 +99,15 @@ module Update
 
       def configure_helm(logger)
         logger.debug('Configuring Helm')
+        status = Open3.popen2e("kubectl create namespace #{NAMESPACE}") do |_, stdout_stderr, wait_thread|
+          while (line = stdout_stderr.gets)
+            logger.debug line.chomp
+          end
+
+          wait_thread.value
+        end
+        abort("Error creating namespace #{NAMESPACE}") unless status.to_i.zero?
+
         status = Open3.popen2e("kubectl create serviceaccount --namespace #{NAMESPACE} tiller") do |_, stdout_stderr, wait_thread|
           while (line = stdout_stderr.gets)
             logger.debug line.chomp

@@ -23,6 +23,12 @@ module Update
             version: '0.11.0',
             params:  cluster_autoscaler_params(config)
           },
+          {
+            channel: 'stable',
+            name:    'kube2iam',
+            version: '0.9.1',
+            params:  kube2iam_params
+          }
         ]
       end
 
@@ -37,6 +43,20 @@ module Update
           'sslCertPath'   => '/etc/kubernetes/pki/ca.crt',
           'rbac'          => {
             'create' => true
+          }
+        }
+      end
+
+      # Configures the firewall rules to allow metadata proxying to work &
+      # Allows specifying Role name rather than full-ARN in deployment manifests
+      def kube2iam_params
+        {
+          'host' => {
+            'iptables' => true,
+            'interface' => 'eni+'
+          },
+          'extraArgs' => {
+            'base-role-arn' => "arn:aws:iam::#{ENV['AWS_ACCOUNT']}:role/"
           }
         }
       end

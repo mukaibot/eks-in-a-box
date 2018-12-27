@@ -5,7 +5,9 @@ module Commands
     class << self
       def call(config, logger)
         validate!(config)
+        ::Create::ClusterIAMPolicyWriter.call(config, logger)
         ::Update::ComponentInstaller.call(config, logger)
+        logger.info("Update complete")
       end
 
       private

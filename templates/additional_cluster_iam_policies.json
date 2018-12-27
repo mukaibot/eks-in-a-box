@@ -12,6 +12,13 @@
         "autoscaling:TerminateInstanceInAutoScalingGroup"
       ],
       "Resource": "*"
+    },
+    {
+      "Action": [
+        "sts:AssumeRole"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
     }
   ]
 }

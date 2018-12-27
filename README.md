@@ -12,11 +12,11 @@ Here's what you get:
 * Metrics server (enables `kubectl top`)
 * An Ingress controller, terminating SSL (if you provide an ACM cert ARN)
 * Cluster Autoscaler (scales nodes up and down as required)
+* IAM integration (the server half of what REA Shipper needs to give your Pods IAM roles)
 * The ability to update the components on your cluster to stay in sync with EKS-in-a-box
 
 Here's what you're getting Really Soon
 * Logs straight into Splunk
-* IAM integration (the server half of what REA Shipper needs to give your Pods IAM roles)
 * Route 53 integration via External DNS
 
 EKS-in-a-box only uses native Ruby functionality and does not require any Gem dependencies. Cool!
@@ -43,4 +43,12 @@ Create an EKS cluster from a defined configuration file
 Updates your cluster to use the latest components / features of eks-in-a-box
 `rea-as saml YourRole bin/eks-box -o update --config yourconfig.yml`
 
+## How it works
 
+EKS-in-a-box does the following:
+
+1. Downloads client binaries to your machine for EKS and Helm
+1. Uses [eksctl](https://github.com/weaveworks/eksctl) to create a cluster
+1. Installs Helm
+1. Adds some additional IAM policies to allow various components to work
+1. Uses Helm to install charts in `lib/update/charts.rb`

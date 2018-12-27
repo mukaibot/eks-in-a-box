@@ -5,7 +5,7 @@ module Create
     POLICY_FILE = File.expand_path(File.join(__dir__, '..', '..', 'templates', 'additional_cluster_iam_policies.json'))
     class << self
       def call(config, logger)
-        logger.info "Adding additional policies from #{POLICY_FILE}"
+        logger.info "Adding additional IAM policies from #{POLICY_FILE}"
         node_role = node_role_arn(config).split('/').last
         cmd = "aws iam put-role-policy --role-name #{node_role} --policy-name additional-iam-policies-eks-in-a-box --policy-document file://#{POLICY_FILE}"
         status = Open3.popen2e(cmd) do |_, stdout_stderr, wait_thread|
