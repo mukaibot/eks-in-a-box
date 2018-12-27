@@ -9,7 +9,7 @@ module Update
             channel: 'stable',
             name:    'metrics-server',
             version: '2.0.4',
-            params:  {}
+            params:  metrics_server_params
           },
           {
             channel: 'stable',
@@ -59,6 +59,18 @@ module Update
               'annotations' => params
             }
           }
+        }
+      end
+
+      # Fix for the Metrics server resolution issue when using customzied domain-name in the VPC DHCP options set
+      # See https://github.com/pahud/amazon-eks-workshop/blob/0d02f0ca64ad3675a5df5a8398b355128d864980/04-scaling/hpa/README.md#metrics-server-resolution-issue-when-using-customzied-domain-name-in-your-vpc-dhcp-options-set
+      def metrics_server_params
+        {
+          'args' => [
+            '--logtostderr',
+            '--kubelet-insecure-tls',
+            '--kubelet-preferred-address-types=InternalIP'
+          ]
         }
       end
     end
