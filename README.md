@@ -43,6 +43,10 @@ Create an EKS cluster from a defined configuration file
 Updates your cluster to use the latest components / features of eks-in-a-box
 `rea-as saml YourRole bin/eks-box -o update --config yourconfig.yml`
 
+### Delete your cluster
+Delete a cluster and clean-up
+`rea-as saml YourRole bin/eks-box -o delete --config yourconfig.yml`
+
 ## How it works
 
 EKS-in-a-box does the following:

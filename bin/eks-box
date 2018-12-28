@@ -4,6 +4,7 @@ PLATFORM = `uname`.chomp.downcase
 require 'logger'
 require 'optparse'
 require 'commands/create'
+require 'commands/delete'
 require 'commands/generate'
 require 'commands/prereqs'
 require 'commands/update'
@@ -15,7 +16,7 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: eks-box [options]"
 
-  opts.on("-oOPERATION", "--operation=OPERATION", "Operation to perform. Valid operations are 'generate', 'create', 'update' or 'prereqs'") do |o|
+  opts.on("-oOPERATION", "--operation=OPERATION", "Operation to perform. Valid operations are 'generate', 'create', 'delete', 'update' or 'prereqs'") do |o|
     options[:operation] = o
   end
 
@@ -43,6 +44,8 @@ end
 case options.dig(:operation)
 when 'create'
   Commands::Create.call(load_config(options, logger), logger)
+when 'delete'
+  Commands::Delete.call(load_config(options, logger), logger)
 when 'generate'
   Commands::Generate.call
 when 'update'

@@ -48,11 +48,11 @@ module Update
       end
 
       # Configures the firewall rules to allow metadata proxying to work &
-      # Allows specifying Role name rather than full-ARN in deployment manifests
+      # allows specifying Role name rather than full-ARN in deployment manifests
       def kube2iam_params
         {
-          'host' => {
-            'iptables' => true,
+          'host'      => {
+            'iptables'  => true,
             'interface' => 'eni+'
           },
           'extraArgs' => {
