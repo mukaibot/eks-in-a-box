@@ -14,6 +14,12 @@ module Update
           },
           {
             channel: 'stable',
+            name:    'external-dns',
+            version: '1.3.0',
+            params:  external_dns_params(config)
+          },
+          {
+            channel: 'stable',
             name:    'nginx-ingress',
             version: '1.1.1',
             params:  ingress_params(config)
@@ -53,7 +59,7 @@ module Update
           'rbac'       => {
             'create' => true
           },
-          'txtOwnerId' => "eks-cluster_#{config.name}"
+          'txtOwnerId' => "eks-cluster-#{config.name}"
         }
       end
 
