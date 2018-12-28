@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'create/node_role_finder'
 
 module Update
   class Charts
@@ -27,7 +28,7 @@ module Update
             channel: 'stable',
             name:    'kube2iam',
             version: '0.9.1',
-            params:  kube2iam_params
+            params:  kube2iam_params(config)
           }
         ]
       end
@@ -47,16 +48,26 @@ module Update
         }
       end
 
+      def external_dns_params(config)
+        {
+          'rbac'       => {
+            'create' => true
+          },
+          'txtOwnerId' => "eks-cluster_#{config.name}"
+        }
+      end
+
       # Configures the firewall rules to allow metadata proxying to work &
       # allows specifying Role name rather than full-ARN in deployment manifests
-      def kube2iam_params
+      def kube2iam_params(config)
         {
           'host'      => {
             'iptables'  => true,
             'interface' => 'eni+'
           },
           'extraArgs' => {
-            'base-role-arn' => "arn:aws:iam::#{ENV['AWS_ACCOUNT']}:role/"
+            'base-role-arn' => "arn:aws:iam::#{ENV['AWS_ACCOUNT']}:role/",
+            'default-role'  => Create::NodeRoleFinder.call(config)
           }
         }
       end

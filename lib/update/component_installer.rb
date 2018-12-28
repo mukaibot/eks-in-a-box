@@ -19,7 +19,6 @@ module Update
       private
 
       def apply_manifests(logger)
-        logger.info("Applying #{manifests.join(', ')}")
         manifests.each { |manifest| apply(manifest, logger) }
         logger.info("Applied #{manifests.size} manifests")
       end
@@ -41,7 +40,7 @@ module Update
         "kubectl apply -f #{manifest}"
       end
 
-      def chart_values(chart, logger)
+      def chart_values(chart)
         values = chart.fetch(:params)
         return nil if values.empty?
 
@@ -51,16 +50,15 @@ module Update
         "--values #{@tmpfile.path}"
       end
 
-      def helm_command(chart, logger)
-
+      def helm_command(chart)
         [
           "helm upgrade #{chart.fetch(:name)}",
           "#{chart.fetch(:channel)}/#{chart.fetch(:name)}",
           '--install',
-          "--namespace #{NAMESPACE}",
+          "--namespace #{chart.fetch(:namespace, NAMESPACE)}",
           "--tiller-namespace #{NAMESPACE}",
           "--version #{chart.fetch(:version)}",
-          chart_values(chart, logger)
+          chart_values(chart)
         ].compact.join(' ')
       end
 
@@ -69,9 +67,9 @@ module Update
         logger.info("Using Helm to install #{charts.size} charts")
 
         charts.each do |chart|
-          logger.info("Executing '#{helm_command(chart, logger)}'")
+          logger.info("Executing '#{helm_command(chart)}'")
           begin
-            status = Open3.popen2e(helm_command(chart, logger)) do |_, stdout_stderr, wait_thread|
+            status = Open3.popen2e(helm_command(chart)) do |_, stdout_stderr, wait_thread|
               while (line = stdout_stderr.gets)
                 logger.debug line.chomp
               end

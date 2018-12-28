@@ -1,0 +1,12 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: admin-binding-eks-in-a-box
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: eks-in-a-box
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
