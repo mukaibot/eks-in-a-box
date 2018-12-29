@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 $LOAD_PATH << 'lib'
 PLATFORM = `uname`.chomp.downcase
 require 'logger'

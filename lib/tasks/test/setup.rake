@@ -13,7 +13,7 @@ private
 
 def configure_cluster
   config = File.expand_path(File.join(__dir__, '..', '..', '..', 'config.yml'))
-  `bin/eks-box -o generate`
+  puts sh 'bin/eks-box -o generate'
   cluster_name = YAML.load_file(config).dig('name')
   abort('Something unexpected happened with the bloody config') if cluster_name.nil?
   cluster_name
