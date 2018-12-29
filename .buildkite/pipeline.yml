@@ -1,5 +1,5 @@
 steps:
-  - label: ':minitest: Tests'
+  - label: ':ruby: Tests'
     command:
     - auto/test
     agents:
@@ -7,7 +7,7 @@ steps:
 
   - block: 'Release Gem'
 
-  - label: ':rake: Push gem '
+  - label: ':rubygems: Push gem '
     branches: 'master'
     agents:
       queue: devlob:staging
