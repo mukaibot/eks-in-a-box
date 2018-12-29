@@ -1,3 +1,5 @@
+[![Build status](https://badge.buildkite.com/e67d4c9dd6ba25899858b56f348d6f15cc9c71922910bddab7.svg)](https://buildkite.com/rea/eks-in-a-box)
+
 # EKS-in-a-box
 _The easy way to spin up Kubernetes at REA_
 

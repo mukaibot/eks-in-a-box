@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+docker build -t eks-in-a-box .
+
+docker run --rm -e BUILDKITE_BUILD_NUMBER eks-in-a-box bundle exec rake inabox:push
