@@ -104,6 +104,9 @@ module Update
             'config' => {
               'force-ssl-redirect' => 'true'
             },
+            'publishService' => {
+              'enabled' => true
+            },
             'service' => {
               'annotations' => params,
               'targetPorts' => {
