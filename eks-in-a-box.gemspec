@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = 'https://rubygems.delivery.realestate.com.au'
+    spec.metadata["allowed_push_host"] = 'https://rubygems.delivery.realestate.com.au/'
 
     spec.metadata["homepage_uri"] = spec.homepage
     spec.metadata["source_code_uri"] = 'https://git.realestate.com.au/timothy-mukaibo/eks-in-a-box'
