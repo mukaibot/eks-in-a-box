@@ -12,7 +12,7 @@ Here's what you get:
 * Client binaries for eksctl, kubectl, IAM authenticator and Helm
 * The Helm package manager
 * Metrics server (enables `kubectl top`)
-* An Ingress controller, terminating SSL (if you provide an ACM cert ARN)
+* An Ingress controller, terminating SSL and redirecting http -> https (if you provide an ACM cert ARN)
 * Cluster Autoscaler (scales nodes up and down as required)
 * IAM integration (the server half of what REA Shipper needs to give your Pods IAM roles)
 * Route 53 integration via External DNS

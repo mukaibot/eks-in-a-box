@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'create/node_role_finder'
 
 module Update
@@ -63,7 +64,7 @@ module Update
 
       def external_dns_params(config)
         {
-          'rbac'       => {
+          'rbac' => {
             'create' => true
           },
           'txtOwnerId' => "eks-cluster-#{config.name}"
@@ -74,7 +75,7 @@ module Update
       # allows specifying Role name rather than full-ARN in deployment manifests
       def kube2iam_params(config)
         {
-          'host'      => {
+          'host' => {
             'iptables'  => true,
             'interface' => 'eni+'
           },
@@ -92,15 +93,22 @@ module Update
 
         params = {
           "#{tag}/aws-load-balancer-ssl-cert"                => cert,
-          "#{tag}/aws-load-balancer-backend-protocol"        => "http",
-          "#{tag}/aws-load-balancer-ssl-ports"               => "https",
+          "#{tag}/aws-load-balancer-backend-protocol"        => 'http',
+          "#{tag}/aws-load-balancer-proxy-protocol"          => '*',
+          "#{tag}/aws-load-balancer-ssl-ports"               => 'https',
           "#{tag}/aws-load-balancer-connection-idle-timeout" => '3600'
         }
 
         {
           'controller' => {
+            'config' => {
+              'force-ssl-redirect' => 'true'
+            },
             'service' => {
-              'annotations' => params
+              'annotations' => params,
+              'targetPorts' => {
+                'https' => 'http'
+              }
             }
           }
         }
