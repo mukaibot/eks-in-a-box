@@ -22,6 +22,11 @@ Here's what you're getting Really Soon
 
 EKS-in-a-box only uses native Ruby functionality and does not require any Gem dependencies. Cool!
 
+# Installation
+`gem install eks-in-a-box --source https://rubygems.delivery.realestate.com.au`
+
+Then run the command `eks-box --help` for usage!
+
 ## Dependencies
 * ruby (whatever OS-X includes is fine)
 * curl

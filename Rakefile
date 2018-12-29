@@ -1,5 +1,7 @@
-require "bundler/gem_tasks"
 require "rake/testtask"
+require 'geminabox-release'
+
+GeminaboxRelease.patch(:host => "https://rubygems.delivery.realestate.com.au")
 
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"

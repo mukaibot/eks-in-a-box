@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{The easy way to spin up an EKS cluster at REA}
   spec.description   = %q{Creates EKS cluster and configures components in Kubernetes to make the cluster useful}
-  spec.homepage      = 'https://git.realestate.com.au/timothy-mukaibo/eks-in-a-box'
+  spec.homepage      = 'https://git.realestate.com.au/team-dc/eks-in-a-box'
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
     spec.metadata["allowed_push_host"] = 'https://rubygems.delivery.realestate.com.au/'
 
     spec.metadata["homepage_uri"] = spec.homepage
-    spec.metadata["source_code_uri"] = 'https://git.realestate.com.au/timothy-mukaibo/eks-in-a-box'
+    spec.metadata["source_code_uri"] = 'https://git.realestate.com.au/team-dc/eks-in-a-box'
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
       "public gem pushes."
@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency 'geminabox-release'
 end
