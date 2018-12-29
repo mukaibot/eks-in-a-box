@@ -7,6 +7,13 @@ module Update
       def all(config)
         [
           {
+            channel:   'stable',
+            name:      'kubernetes-dashboard',
+            version:   '0.10.2',
+            namespace: 'kube-system',
+            params:    {}
+          },
+          {
             channel: 'stable',
             name:    'metrics-server',
             version: '2.0.4',
