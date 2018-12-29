@@ -4,4 +4,4 @@ set -euo pipefail
 
 docker build -t eks-in-a-box .
 
-docker run --rm eks-in-a-box bundle exec rake
+docker run --rm eks-in-a-box bundle exec rake e2e_tests

@@ -1,3 +1,6 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-
-require "minitest/autorun"
+require 'yaml'
+require 'json'
+require 'open3'
+require 'minitest/autorun'
+require 'minitest/hooks/test'

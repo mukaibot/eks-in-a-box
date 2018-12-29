@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: eks-in-a-box-e2e
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - host: eks-in-a-box-e2e.devlob-staging.realestate.com.au
+      http:
+        paths:
+          - backend:
+              serviceName: eks-in-a-box-e2e
+              servicePort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-in-a-box-e2e
+  labels:
+    app: eks-in-a-box-e2e
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eks-in-a-box-e2e
+  template:
+    metadata:
+      labels:
+        app: eks-in-a-box-e2e
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: eks-in-a-box-e2e
+  labels:
+    app: eks-in-a-box-e2e
+spec:
+  selector:
+    app: eks-in-a-box-e2e
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

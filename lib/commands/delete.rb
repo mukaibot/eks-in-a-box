@@ -26,9 +26,9 @@ module Commands
       end
 
       def remove_policy(config, logger)
-        node_role       = Create::NodeRoleFinder.call(config)
+        node_role       = ::Create::NodeRoleFinder.call(config)
         already_deleted = false
-        cmd             = "aws iam delete-role-policy --role-name #{node_role} --policy-name #{POLICY_NAME}"
+        cmd             = "aws iam delete-role-policy --role-name #{node_role} --policy-name #{::Create::ClusterIAMPolicyWriter::POLICY_NAME}"
         logger.debug("Removing additional IAM policies with command '#{cmd}'")
         status = Open3.popen2e(cmd) do |_, stdout_stderr, wait_thread|
           while (line = stdout_stderr.gets)
