@@ -1,7 +1,9 @@
 FROM ruby:2.5
 
-RUN apt-get update -y && apt-get install -y awscli
+RUN apt-get update -y && apt-get install -y python-pip && pip install awscli
 ENV AWS_REGION ap-southeast-2
+ENV PATH="/root/.local/bin:${PATH}"
+
 RUN mkdir -p /app/lib
 COPY Gemfile Gemfile.lock eks-in-a-box.gemspec /app/
 COPY lib/eks_in_a_box.rb /app/lib/
