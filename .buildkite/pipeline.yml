@@ -1,5 +1,7 @@
 steps:
   - label: ':ruby: Tests'
+    concurrency_group: eks-in-a-box-tests
+    concurrency: 1
     command:
     - auto/test
     agents:
@@ -9,6 +11,8 @@ steps:
 
   - label: ':rubygems: Push gem '
     branches: 'master'
+    concurrency_group: eks-in-a-box-release
+    concurrency: 1
     agents:
       queue: devlob:staging
     command:
