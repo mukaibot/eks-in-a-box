@@ -10,14 +10,13 @@ module Create
       private
 
       def stack_name(config)
-        "eksctl-#{config.name}-nodegroup-0"
+        "eksctl-#{config.name}-nodegroup"
       end
 
       def outputs(config)
-        describe_stack = `aws cloudformation describe-stacks --stack-name #{stack_name(config)}`.chomp
+        describe_stack = `aws cloudformation describe-stacks --query 'Stacks[?starts_with(StackName,\`#{stack_name(config)}\`)]'`.chomp
 
         JSON.parse(describe_stack)
-          .dig('Stacks')
           .first
           .dig('Outputs')
       end
