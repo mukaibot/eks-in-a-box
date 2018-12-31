@@ -1,6 +1,7 @@
 require "rake/testtask"
 require 'geminabox-release'
 
+ROOT = File.expand_path(__dir__)
 Dir.glob('lib/tasks/**/*.rake').each(&method(:load))
 
 GeminaboxRelease.patch(:host => "https://rubygems.delivery.realestate.com.au")
