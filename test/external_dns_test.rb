@@ -1,18 +1,26 @@
 require 'test_helper'
 require 'uri'
+require 'rake'
+load File.expand_path('lib/tasks/test/teardown.rake')
 
-class ExternalDnsComponentTest < Minitest::Test
-  include Minitest::Hooks
-
+class ExternalDnsComponentTest < Test
   TIMEOUT_FOR_EXTERNAL_DNS = 123 # External DNS can take up to two minutes (give it an extra 3 seconds)
   SLEEP_INTERVAL           = 3 # wait 3 seconds between polls
   MAX_ATTEMPTS             = TIMEOUT_FOR_EXTERNAL_DNS / SLEEP_INTERVAL
+
+  def test_pod_running
+    assert_pod_running 'external-dns'
+  end
 
   def test_it_creates_route53_record
     apply_manifest
     wait_for_deployment
 
-    assert record_exists_in_route53?
+    begin
+      assert record_exists_in_route53?
+    ensure
+      Rake::Task['clean_up_route53'].invoke
+    end
   end
 
   private
@@ -67,4 +75,5 @@ class ExternalDnsComponentTest < Minitest::Test
   def wait_for_deployment
     `kubectl rollout status deployment/#{deployment}`
   end
+
 end

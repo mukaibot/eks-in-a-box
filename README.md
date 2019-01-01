@@ -21,6 +21,7 @@ Here's what you get:
 Here's what you're getting Really Soon
 * Kubernetes dashboard
 * Logs straight into Splunk
+* Adding additional IAM roles to EKS (ie to allow your Buildkite agent role to deploy apps)
 
 EKS-in-a-box only uses native Ruby functionality and does not require any Gem dependencies. Cool!
 

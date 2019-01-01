@@ -6,6 +6,11 @@ require 'yaml'
 desc 'Teardown the test cluster'
 task :teardown do
   delete_cluster
+  Rake::Task['clean_up_route53'].invoke
+end
+
+desc 'Clean-up the E2E Route53 record'
+task :clean_up_route53 do
   clean_up_route53_records
 end
 
@@ -26,11 +31,11 @@ end
 def delete_record(zone_id, record)
   changeset = {
     'Changes': [
-      {
-        'Action': 'DELETE',
-        'ResourceRecordSet': record
-      }
-    ]
+                 {
+                   'Action':            'DELETE',
+                   'ResourceRecordSet': record
+                 }
+               ]
   }.to_json
 
   Tempfile.open('eks-in-a-box-teardown') do |file|
@@ -38,8 +43,8 @@ def delete_record(zone_id, record)
     file.flush
 
     cmd = "aws route53 change-resource-record-sets --hosted-zone-id=#{zone_id} --change-batch file://#{file.path}"
-    puts "Executing '#{cmd}'"
-    sh cmd
+    puts "Executing '#{cmd}'" if ENV['DEBUG']
+    `#{cmd}`
   end
 end
 
