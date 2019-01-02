@@ -1,6 +1,6 @@
 module CustomAssertions
   POD_RUNNING_MAX_ATTEMPTS = 100
-  POD_RUNNING_INTERVAL     = 3_000
+  POD_RUNNING_INTERVAL     = 3
 
   def assert_pod_running(name, namespace = 'eks-in-a-box', attempt = 0, msg = nil)
     pod    = `kubectl -n #{namespace} get pod | grep #{name}`.chomp

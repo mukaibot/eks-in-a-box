@@ -75,5 +75,4 @@ class ExternalDnsComponentTest < Test
   def wait_for_deployment
     `kubectl rollout status deployment/#{deployment}`
   end
-
 end
