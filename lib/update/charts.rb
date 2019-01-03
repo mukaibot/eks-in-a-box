@@ -64,7 +64,7 @@ module Update
 
       def external_dns_params(config)
         {
-          'rbac' => {
+          'rbac'       => {
             'create' => true
           },
           'txtOwnerId' => "eks-cluster-#{config.name}"
@@ -74,15 +74,17 @@ module Update
       # Configures the firewall rules to allow metadata proxying to work &
       # allows specifying Role name rather than full-ARN in deployment manifests
       def kube2iam_params(config)
+        base_role_arn = ENV['AWS_ACCOUNT'].nil? ? nil : "arn:aws:iam::#{ENV['AWS_ACCOUNT']}:role/"
+
         {
-          'host' => {
+          'host'      => {
             'iptables'  => true,
             'interface' => 'eni+'
           },
           'extraArgs' => {
-            'base-role-arn' => "arn:aws:iam::#{ENV['AWS_ACCOUNT']}:role/",
+            'base-role-arn' => base_role_arn,
             'default-role'  => Create::NodeRoleFinder.call(config)
-          }
+          }.compact
         }
       end
 
@@ -101,13 +103,13 @@ module Update
 
         {
           'controller' => {
-            'config' => {
+            'config'         => {
               'force-ssl-redirect' => 'true'
             },
             'publishService' => {
               'enabled' => true
             },
-            'service' => {
+            'service'        => {
               'annotations' => params,
               'targetPorts' => {
                 'https' => 'http'
