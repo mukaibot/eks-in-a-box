@@ -18,6 +18,9 @@ module CustomAssertions
       sleep POD_RUNNING_INTERVAL
       assert_pod_running(name, namespace, attempt + 1, msg)
     else
+      pod_name = pod.split("\n")[1].split(' ').first
+      puts "Logs from failed pod #{pod_name}:"
+      puts `kubectl -n #{namespace} logs #{pod_name}`.chomp
       flunk msg
     end
   end

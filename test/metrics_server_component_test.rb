@@ -16,8 +16,10 @@ class MetricsServerComponentTest < ParallelTest
   private
 
   def metrics_collected?(attempt = 0)
-    top_output = `kubectl top node`.chomp.split("\n")
-    if top_output.size > 1
+    top_output, _status = Open3.capture2e('kubectl top node')
+    top_output          = top_output.split("\n")
+
+    if top_output.size > 1 && !top_output.include?('error')
       true
     elsif attempt < METRICS_MAX_ATTEMPT
       sleep METRICS_INTERVAL
