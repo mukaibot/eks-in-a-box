@@ -49,6 +49,13 @@ module Update
 
       private
 
+      def account_number
+        return ENV['AWS_ACCOUNT'] unless ENV['AWS_ACCOUNT'].nil?
+
+        JSON.parse(`curl http://169.254.169.254/latest/dynamic/instance-identity/document`.chomp)
+          .dig('accountId')
+      end
+
       def cluster_autoscaler_params(config)
         {
           'autoDiscovery' => {
@@ -74,15 +81,13 @@ module Update
       # Configures the firewall rules to allow metadata proxying to work &
       # allows specifying Role name rather than full-ARN in deployment manifests
       def kube2iam_params(config)
-        base_role_arn = ENV['AWS_ACCOUNT'].nil? ? nil : "arn:aws:iam::#{ENV['AWS_ACCOUNT']}:role/"
-
         {
           'host'      => {
             'iptables'  => true,
             'interface' => 'eni+'
           },
           'extraArgs' => {
-            'base-role-arn' => base_role_arn,
+            'base-role-arn' => "arn:aws:iam::#{account_number}:role/",
             'default-role'  => Create::NodeRoleFinder.call(config)
           }.compact
         }
