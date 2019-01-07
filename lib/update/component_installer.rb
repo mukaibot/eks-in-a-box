@@ -1,17 +1,20 @@
 # frozen_string_literal: true
 
+require 'open3'
 require 'yaml'
 require 'tempfile'
 require 'update/charts'
+require 'update/helm_installer'
+require 'update/iam_role_mapper'
 
 module Update
   class ComponentInstaller
-    MAX_ATTEMPTS = 100
-    NAMESPACE    = 'eks-in-a-box'
+    NAMESPACE = 'eks-in-a-box'
 
     class << self
       def call(config, logger)
-        configure_helm(logger) if helm_unconfigured?(logger)
+        HelmConfigurer.call(logger)
+        apply_role_mappings(config, logger) if config.map_roles.any?
         apply_manifests(logger) if manifests.any?
         helminate(config, logger)
       end
@@ -50,6 +53,18 @@ module Update
         "--values #{@tmpfile.path}"
       end
 
+      def apply_role_mappings(config, logger)
+        role_count = config.map_roles.keys.size
+        number     = role_count == 1 ? 'role' : 'roles'
+        logger.debug("Writing manifest for #{role_count} additional #{number}")
+
+        Tempfile.open('iam_role') do |file|
+          file.write(Update::IAMRoleMapper.call(config))
+          file.flush
+          apply(file.path, logger)
+        end
+      end
+
       def helm_command(chart)
         [
           "helm upgrade #{chart.fetch(:name)}",
@@ -86,65 +101,6 @@ module Update
 
       def manifests
         Dir.glob('features/**/*.yaml') + Dir.glob('features/**/*.yml')
-      end
-
-      def helm_unconfigured?(logger)
-        _version, status = Open3.capture2e("helm version --tiller-namespace #{NAMESPACE}")
-        configured       = status.to_i.zero?
-        configured ? logger.debug('Helm is configured') : logger.debug('Helm is not configured')
-        !configured
-      end
-
-      def configure_helm(logger)
-        logger.debug('Configuring Helm')
-        status = Open3.popen2e("kubectl create namespace #{NAMESPACE}") do |_, stdout_stderr, wait_thread|
-          while (line = stdout_stderr.gets)
-            logger.debug line.chomp
-          end
-
-          wait_thread.value
-        end
-        abort("Error creating namespace #{NAMESPACE}") unless status.to_i.zero?
-
-        status = Open3.popen2e("kubectl create serviceaccount --namespace #{NAMESPACE} tiller") do |_, stdout_stderr, wait_thread|
-          while (line = stdout_stderr.gets)
-            logger.debug line.chomp
-          end
-
-          wait_thread.value
-        end
-        abort('Error creating Helm service account') unless status.to_i.zero?
-        status = Open3.popen2e("kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=#{NAMESPACE}:tiller") do |_, stdout_stderr, wait_thread|
-          while (line = stdout_stderr.gets)
-            logger.debug line.chomp
-          end
-
-          wait_thread.value
-        end
-
-        abort('Error configuring Helm service account') unless status.to_i.zero?
-
-        Open3.popen2e("helm init --service-account tiller --tiller-namespace #{NAMESPACE}") do |_, stdout_stderr, wait_thread|
-          while (line = stdout_stderr.gets)
-            logger.debug line.chomp
-          end
-
-          wait_thread.value
-        end
-
-        abort('Timed out waiting for Helm to install') unless wait_for_helm(logger)
-      end
-
-      def wait_for_helm(logger, attempt = 0)
-        return false if attempt == MAX_ATTEMPTS
-
-        if helm_unconfigured?(logger)
-          attempt += 1
-          sleep(3)
-          wait_for_helm(logger, attempt)
-        else
-          true
-        end
       end
     end
   end
