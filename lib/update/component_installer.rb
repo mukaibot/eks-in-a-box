@@ -4,7 +4,7 @@ require 'open3'
 require 'yaml'
 require 'tempfile'
 require 'update/charts'
-require 'update/helm_installer'
+require 'update/helm_configurer'
 require 'update/iam_role_mapper'
 
 module Update
