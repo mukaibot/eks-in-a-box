@@ -3,6 +3,7 @@ require 'yaml'
 require 'json'
 require 'open3'
 require 'minitest/autorun'
+require 'minitest/mock'
 require 'minitest/hooks/test'
 require 'custom_assertions'
 

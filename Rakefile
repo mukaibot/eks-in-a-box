@@ -12,6 +12,12 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList["test/**/*_test.rb"]
 end
 
+Rake::TestTask.new(:unit) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList["test/**/*_test.rb"].exclude("test/**/*component_test.rb")
+end
+
 desc 'Run the E2E tests (these take a LONG time)'
 task :e2e_tests do
   begin
