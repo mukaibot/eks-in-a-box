@@ -25,6 +25,8 @@ class MetricsServerComponentTest < ParallelTest
       sleep METRICS_INTERVAL
       metrics_collected?(attempt + 1)
     else
+      # Just write the error to the console
+      puts top_output
       false
     end
   end
