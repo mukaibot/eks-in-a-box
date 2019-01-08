@@ -24,7 +24,8 @@ node_ebs_size: 50
 node_type: t3.medium
 
 map_roles:
+  # Allow our Buildkite Agents to use kubectl / Shipper K8S
   buildkite:
     kube_roles:
     - edit
-    aws_role_arn: arn:aws:iam::475385300542:role/devlob-staging-NormalUser
+    aws_role_arn: arn:aws:iam::475385300542:role/devlob-staging-buildkite-role

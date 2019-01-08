@@ -24,8 +24,8 @@ class IAMRoleMapperTest < ParallelTest
     config           = EksConfig.new
     config.map_roles = {
       user_name => {
-        kube_roles:   [kube_role],
-        aws_role_arn: aws_role_arn
+        'kube_roles'   => [kube_role],
+        'aws_role_arn' => aws_role_arn
       }
     }
     config
@@ -37,21 +37,38 @@ class IAMRoleMapperTest < ParallelTest
       apiVersion: v1
       kind: ConfigMap
       data:
-        mapRoles:
-        - groups:
-          - system:bootstrappers
-          - system:nodes
-          rolearn: arn:aws:iam::475385300542:role/eksctl-ekstatic-nodegroup-ng-2f-NodeInstanceRole-SG177NZZXR3X
-          username: system:node:{{EC2PrivateDNSName}}
-        - groups:
-          - #{kube_role}
-          rolearn: #{aws_role_arn}
-          username: #{user_name}
+        mapRoles: |
+          ---
+          - groups:
+            - system:bootstrappers
+            - system:nodes
+            rolearn: arn:aws:iam::475385300542:role/eksctl-ekstatic-nodegroup-ng-2f-NodeInstanceRole-SG177NZZXR3X
+            username: system:node:{{EC2PrivateDNSName}}
+          - groups:
+            - #{kube_role}
+            rolearn: #{aws_role_arn}
+            username: #{user_name}
+      metadata:
+        name: aws-auth
+        namespace: kube-system
+      ---
+      kind: ClusterRoleBinding
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: #{user_name}
+      subjects:
+      - kind: User
+        name: #{user_name}
+        namespace: eks-in-a-box
+      roleRef:
+        kind: ClusterRole
+        name: #{kube_role}
+        apiGroup: rbac.authorization.k8s.io
     YAML
   end
 
   def config_map_from_cluster
-    File.read(File.join(__dir__, 'fixtures', 'aws_auth_config_map_from_server.yml'))
+    YAML.load_file(File.join(__dir__, 'fixtures', 'aws_auth_config_map_from_server.yml'))
   end
 
   def user_name

@@ -28,6 +28,7 @@ module Create
         '--node-ami=auto',
         "--node-type=#{config.node_type}",
         "--node-volume-size=#{config.node_ebs_size}",
+        "--node-volume-type=gp2",
         "--region=#{config.region}",
         '--node-private-networking',
         "--tags k8s.io/cluster-autoscaler/enabled=true,kubernetes.io/cluster/#{config.name}=true",

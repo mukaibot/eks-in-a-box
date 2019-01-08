@@ -16,12 +16,12 @@ Here's what you get:
 * Cluster Autoscaler (scales nodes up and down as required)
 * IAM integration (the server half of what REA Shipper needs to give your Pods IAM roles)
 * Route 53 integration via External DNS
+* Easily give additional IAM roles access to your cluster (ie for Buildkite Agents to do deployments)
 * The ability to update the components on your cluster to stay in sync with EKS-in-a-box
 
 Here's what you're getting Really Soon
 * Kubernetes dashboard
 * Logs straight into Splunk
-* Adding additional IAM roles to EKS (ie to allow your Buildkite agent role to deploy apps)
 
 EKS-in-a-box only uses native Ruby functionality and does not require any Gem dependencies. Cool!
 
