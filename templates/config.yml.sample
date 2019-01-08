@@ -28,4 +28,4 @@ map_roles:
   buildkite:
     kube_roles:
     - edit
-    aws_role_arn: arn:aws:iam::475385300542:role/devlob-staging-buildkite-role
+    aws_role_arn: arn:aws:iam::475385300542:role/devlob-staging-buildkite-iam-role
