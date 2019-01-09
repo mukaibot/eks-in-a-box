@@ -17,3 +17,5 @@ steps:
       queue: devlob:staging
     command:
     - auto/release
+    artifact_paths:
+    - 'pkg/*.gem'
