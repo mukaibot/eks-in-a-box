@@ -8,6 +8,7 @@ require 'commands/delete'
 require 'commands/generate'
 require 'commands/prereqs'
 require 'commands/update'
+require 'commands/write_config'
 require 'eks_config'
 
 logger  = Logger.new(STDOUT)
@@ -16,7 +17,7 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: eks-box [options]"
 
-  opts.on("-oOPERATION", "--operation=OPERATION", "Operation to perform. Valid operations are 'generate', 'create', 'delete', 'update' or 'prereqs'") do |o|
+  opts.on("-oOPERATION", "--operation=OPERATION", "Operation to perform. Valid operations are 'generate', 'create', 'delete', 'update', 'prereqs' or 'write-config'") do |o|
     options[:operation] = o
   end
 
@@ -52,6 +53,8 @@ when 'update'
   Commands::Update.call(load_config(options, logger), logger)
 when 'prereqs'
   Commands::Prereqs.call
+when 'write-config'
+  Commands::WriteConfig.call(load_config(options, logger), logger)
 else
   abort("Unknown option '#{options.dig(:operation)}'")
 end

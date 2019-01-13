@@ -36,13 +36,23 @@ Then run the command `eks-box --help` for usage!
 * aws cli
 
 ## Usage
+*Note: `yourconfig.yml` represents the path to a configuration file you have created with the generate command.*
+
 ### View the help
 Shows the usage instructions
 `bin/eks-box --help`
 
+### Download the client binaries
+Downloads client binaries for kubectl, eksctl and helm. This is run automatically when you create a cluster.
+`bin/eks-box --operation prereqs`
+
 ### Generate a sample config
 Generates a sample configuration file that you can edit
 `bin/eks-box --operation generate`
+
+### Configure your kube config with your cluser
+Once you have created a cluster, or want to access one that has already been created, you can update your local kube config with this command.
+`bin/eks-box --operation write-config --config yourconfig.yml`
 
 ### Create your cluster
 Create an EKS cluster from a defined configuration file
